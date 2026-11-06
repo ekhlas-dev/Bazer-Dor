@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# BazarDor (বাজার দর)
 
-## Getting Started
+BazarDor is a responsive web application that helps users check the prices of everyday essential products in Bangladesh. Users can explore products, compare market prices, and see price changes.
 
-First, run the development server:
+## Technologies Used
+
+- Next.js 16 (App Router)
+- React
+- Tailwind CSS
+- DaisyUI
+- Better Auth
+- MongoDB
+- Lucide React
+- React Fast Marquee
+- Programming Hero BazarDor API
+
+## Features
+
+1. **Product Listing:** Browse essential products and their current prices.
+2. **Category Navigation:** Explore products by category.
+3. **Product Details:** View product information and market-wise price comparisons.
+4. **Price Trends:** See price increases and decreases.
+5. **Price Ticker:** View continuously scrolling product prices.
+6. **Product Sorting:** Sort products by lowest and highest prices.
+7. **User Authentication:** Sign up and sign in using email and password.
+8. **Social Login:** Sign in using Google and GitHub.
+9. **User Profile:** View and update profile information.
+10. **Protected Routes:** Restrict access to selected pages for logged-out users.
+11. **Responsive Design:** Optimized for mobile, tablet, and desktop screens.
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+```
+
+Go to the project directory:
+
+```bash
+cd YOUR_PROJECT_FOLDER
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file in the root directory and configure the required environment variables:
+
+```env
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
+
+MONGODB_URL=
+
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+```
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Project Description
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+BazarDor aims to make everyday shopping decisions easier by providing product prices, category-based browsing, and market-wise price comparisons in one place.
