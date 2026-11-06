@@ -270,10 +270,16 @@ const ProductPage = ({ params }) => {
           </div>
         }
       >
-        {/* <ProductPageContent params={params} /> */}
+        <ProductPageContent params={params} />
       </Suspense>
     </main>
   );
+};
+
+const ProductPageContent = async ({ params }) => {
+  const { slug } = await params;
+
+  return <ProductContent slug={slug} />;
 };
 
 export default ProductPage;

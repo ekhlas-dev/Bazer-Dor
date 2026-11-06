@@ -88,7 +88,7 @@ const CategoryContent = async ({ slug }) => {
 
         <div className="mt-6 flex items-center gap-3">
           <span className="text-4xl">
-            {category.icon || "🛒"}
+            {category.image || "🛒"}
           </span>
 
           <h1 className="text-3xl font-bold text-gray-900">
