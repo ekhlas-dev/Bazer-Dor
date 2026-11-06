@@ -1,15 +1,59 @@
-
 "use client";
 
-import { useSession, signOut } from "@/lib/auth-client";
+import { useSession, signOut, authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
 const ProfilePage = () => {
   const router = useRouter();
   const { data: session, isPending } = useSession();
+
   const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    if (session?.user?.name) {
+      setName(session.user.name);
+    }
+  }, [session?.user?.name]);
+
+  const handleUpdateProfile = async (event) => {
+    event.preventDefault();
+
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      toast.error("Name cannot be empty!");
+      return;
+    }
+
+    if (trimmedName === session.user.name) {
+      toast.error("No changes found!");
+      return;
+    }
+
+    try {
+      setUpdating(true);
+
+      const { error } = await authClient.updateUser({
+        name: trimmedName,
+      });
+
+      if (error) {
+        toast.error(error.message || "Profile update failed!");
+        return;
+      }
+
+      toast.success("Profile updated successfully!");
+      router.refresh();
+    } catch (error) {
+      toast.error(error.message || "Something went wrong!");
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -66,7 +110,7 @@ const ProfilePage = () => {
         </h1>
 
         <p className="mt-2 text-sm text-gray-500">
-          Your account information
+          Manage your account information
         </p>
 
         <div className="mt-8 flex items-center gap-4">
@@ -86,37 +130,66 @@ const ProfilePage = () => {
             <h2 className="text-xl font-semibold text-gray-900">
               {user.name}
             </h2>
-            <p className="text-sm text-gray-500">{user.email}</p>
+            <p className="text-sm text-gray-500">
+              {user.email}
+            </p>
           </div>
         </div>
 
-        <div className="mt-8 space-y-4 border-t border-gray-100 pt-6">
+        <form
+          onSubmit={handleUpdateProfile}
+          className="mt-8 space-y-5 border-t border-gray-100 pt-6"
+        >
           <div>
-            <p className="text-sm text-gray-500">Full Name</p>
-            <p className="mt-1 font-medium text-gray-900">
-              {user.name}
-            </p>
+            <label
+              htmlFor="name"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Full Name
+            </label>
+
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Enter your name"
+              required
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-emerald-600"
+            />
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">Email Address</p>
-            <p className="mt-1 font-medium text-gray-900">
+            <p className="text-sm font-medium text-gray-700">
+              Email Address
+            </p>
+            <p className="mt-1 text-gray-600">
               {user.email}
             </p>
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">Email Verified</p>
-            <p className="mt-1 font-medium text-gray-900">
+            <p className="text-sm font-medium text-gray-700">
+              Email Verified
+            </p>
+            <p className="mt-1 text-gray-600">
               {user.emailVerified ? "Verified" : "Not verified"}
             </p>
           </div>
-        </div>
+
+          <button
+            type="submit"
+            disabled={updating || !name.trim() || name.trim() === user.name}
+            className="w-full rounded-lg bg-emerald-700 py-3 font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {updating ? "Updating..." : "Update Profile"}
+          </button>
+        </form>
 
         <button
           onClick={handleSignOut}
           disabled={loading}
-          className="mt-8 w-full rounded-lg bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-4 w-full rounded-lg border border-red-200 py-3 font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Signing Out..." : "Sign Out"}
         </button>

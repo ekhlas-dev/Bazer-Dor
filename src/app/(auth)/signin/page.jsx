@@ -6,6 +6,7 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import { Toaster, toast } from "react-hot-toast";
+import { Github } from "lucide-react";
 
 const SignInForm = () => {
   const router = useRouter();
@@ -14,6 +15,16 @@ const SignInForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState("");
+
+  const callbackURL = searchParams.get("callbackURL");
+
+  const safeCallbackURL =
+    callbackURL &&
+    callbackURL.startsWith("/") &&
+    !callbackURL.startsWith("//")
+      ? callbackURL
+      : "/";
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -38,21 +49,31 @@ const SignInForm = () => {
 
       toast.success("Login successful!");
 
-      const callbackURL = searchParams.get("callbackURL");
-
-      const safeCallbackURL =
-        callbackURL &&
-        callbackURL.startsWith("/") &&
-        !callbackURL.startsWith("//")
-          ? callbackURL
-          : "/";
-
       router.replace(safeCallbackURL);
       router.refresh();
     } catch (error) {
       toast.error(error.message || "Something went wrong!");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSocialLogin = async (provider) => {
+    try {
+      setSocialLoading(provider);
+
+      const result = await signIn.social({
+        provider,
+        callbackURL: safeCallbackURL,
+      });
+
+      if (result?.error) {
+        toast.error(result.error.message || "Social login failed!");
+        setSocialLoading("");
+      }
+    } catch (error) {
+      toast.error(error.message || "Something went wrong!");
+      setSocialLoading("");
     }
   };
 
@@ -69,7 +90,41 @@ const SignInForm = () => {
           Welcome back to বাজার দর
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+        {/* Social Login */}
+        <div className="mt-8 space-y-3">
+          <button
+            type="button"
+            onClick={() => handleSocialLogin("google")}
+            disabled={loading || !!socialLoading}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white py-3 font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
+          >
+            <span className="text-xl font-bold text-blue-600">G</span>
+            {socialLoading === "google"
+              ? "Connecting to Google..."
+              : "Continue with Google"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSocialLogin("github")}
+            disabled={loading || !!socialLoading}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white py-3 font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
+          >
+            <span className="text-lg font-bold">GH</span>
+            {socialLoading === "github"
+              ? "Connecting to GitHub..."
+              : "Continue with GitHub"}
+          </button>
+        </div>
+
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-gray-200" />
+          <span className="text-xs text-gray-400">OR CONTINUE WITH EMAIL</span>
+          <div className="h-px flex-1 bg-gray-200" />
+        </div>
+
+        {/* Email Login */}
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label
               htmlFor="email"
@@ -110,7 +165,7 @@ const SignInForm = () => {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !!socialLoading}
             className="w-full rounded-lg bg-emerald-700 py-3 font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Signing In..." : "Sign In"}
