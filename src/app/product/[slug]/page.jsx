@@ -1,7 +1,9 @@
-
 import { Suspense } from "react";
 import Link from "next/link";
 import { getProductById } from "@/libs/api";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 
 const numberFormat = new Intl.NumberFormat("bn-BD");
 
@@ -46,9 +48,7 @@ const ProductContent = async ({ slug }) => {
   if (!product?.id) {
     return (
       <div className="py-20 text-center">
-        <h1 className="text-2xl font-bold text-gray-900">
-          পণ্য পাওয়া যায়নি
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900">পণ্য পাওয়া যায়নি</h1>
         <Link href="/" className="mt-5 inline-block text-emerald-700">
           হোম পেজে ফিরে যান
         </Link>
@@ -56,9 +56,7 @@ const ProductContent = async ({ slug }) => {
     );
   }
 
-  const markets = Array.isArray(product.markets)
-    ? product.markets
-    : [];
+  const markets = Array.isArray(product.markets) ? product.markets : [];
 
   const minimumPrice = markets.length
     ? Math.min(...markets.map((market) => Number(market.min)))
@@ -72,17 +70,14 @@ const ProductContent = async ({ slug }) => {
     ? markets.reduce(
         (total, market) =>
           total + (Number(market.min) + Number(market.max)) / 2,
-        0
+        0,
       ) / markets.length
     : 0;
 
   const isUp = product.change?.dir === "up";
   const isDown = product.change?.dir === "down";
 
-  const unit =
-    unitNames[product.unit?.toLowerCase()] ||
-    product.unit ||
-    "একক";
+  const unit = unitNames[product.unit?.toLowerCase()] || product.unit || "একক";
 
   return (
     <>
@@ -103,17 +98,13 @@ const ProductContent = async ({ slug }) => {
 
         <span className="mx-2 text-gray-400">/</span>
 
-        <span className="text-sm text-gray-500">
-          {product.nameBn}
-        </span>
+        <span className="text-sm text-gray-500">{product.nameBn}</span>
       </div>
 
       {/* Product Overview */}
       <section className="grid gap-8 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 md:grid-cols-2">
         <div className="flex min-h-64 items-center justify-center rounded-2xl bg-[#f5f8f5]">
-          <span className="text-8xl">
-            {product.image || "🛒"}
-          </span>
+          <span className="text-8xl">{product.image || "🛒"}</span>
         </div>
 
         <div className="flex flex-col justify-center">
@@ -125,9 +116,7 @@ const ProductContent = async ({ slug }) => {
             {product.nameBn}
           </h1>
 
-          <p className="mt-3 text-sm text-gray-500">
-            প্রতি {unit}
-          </p>
+          <p className="mt-3 text-sm text-gray-500">প্রতি {unit}</p>
 
           <div className="mt-7 border-t border-gray-100 pt-6">
             <p className="text-sm text-gray-500">আজকের বাজারদর</p>
@@ -205,9 +194,7 @@ const ProductContent = async ({ slug }) => {
       {/* Market Prices */}
       <section className="mt-12">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            বাজারভিত্তিক দাম
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900">বাজারভিত্তিক দাম</h2>
 
           <p className="mt-2 text-sm text-gray-500">
             বিভিন্ন বাজারে এই পণ্যের সর্বনিম্ন ও সর্বোচ্চ দাম।
@@ -291,6 +278,16 @@ const ProductPage = ({ params }) => {
 
 const ProductPageContent = async ({ params }) => {
   const { slug } = await params;
+
+  // Check user session
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  // If user is not logged in
+  if (!session) {
+    redirect("/signin");
+  }
 
   return <ProductContent slug={slug} />;
 };
