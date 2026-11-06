@@ -270,26 +270,10 @@ const ProductPage = ({ params }) => {
           </div>
         }
       >
-        <ProductPageContent params={params} />
+        {/* <ProductPageContent params={params} /> */}
       </Suspense>
     </main>
   );
-};
-
-const ProductPageContent = async ({ params }) => {
-  const { slug } = await params;
-
-  // Check user session
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  // If user is not logged in
-  if (!session) {
-    redirect("/signin");
-  }
-
-  return <ProductContent slug={slug} />;
 };
 
 export default ProductPage;
