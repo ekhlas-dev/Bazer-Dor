@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/component/shared/Navbar";
 import { Suspense } from "react";
 import PriceTicker from "@/component/shared/PriceTicker";
+import Footer from "@/component/shared/Footer";
 
 function NavbarFallback() {
   return <div className="h-16 animate-pulse bg-gray-100" />;
@@ -40,6 +41,7 @@ export default function RootLayout({ children }) {
           <PriceTicker />
         </Suspense>
         {children}
+        <Footer></Footer>
       </body>
     </html>
   );

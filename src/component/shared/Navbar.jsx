@@ -1,7 +1,7 @@
-
 import Link from "next/link";
 import { getCategories } from "@/libs/api";
 import CategoryNavigation from "./CategoryNavigation";
+import DateDisplay from "./DateDisplay";
 
 const Navbar = async () => {
   let categories = [];
@@ -21,19 +21,14 @@ const Navbar = async () => {
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
       <div className="mx-auto max-w-6xl px-4">
-
         {/* Top Navbar */}
         <div className="flex items-center justify-between gap-4 py-4">
-
           {/* Logo */}
           <Link href="/" className="shrink-0">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
               🛒 বাজার দর
             </h1>
-
-            <p className="mt-1 text-xs text-gray-500">
-              {banglaDate}
-            </p>
+            <DateDisplay />
           </Link>
 
           {/* Authentication Buttons */}
@@ -58,7 +53,6 @@ const Navbar = async () => {
         <div className="border-t border-gray-100">
           <CategoryNavigation categories={categories} />
         </div>
-
       </div>
     </header>
   );

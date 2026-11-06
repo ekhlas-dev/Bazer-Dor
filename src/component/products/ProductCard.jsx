@@ -37,7 +37,7 @@ const ProductCard = ({ product }) => {
       <div className="flex items-start justify-between">
 
         <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#f5f8f5] text-4xl">
-          {product.emoji || "🛒"}
+          {product.icon || "🛒"}
         </div>
 
         <span
